@@ -11,7 +11,7 @@ import SwiperCore, {
   Navigation,
   Pagination,
 } from "swiper";
-import "swiper/css/bundle";
+//import "swiper/css/bundle";
 import {
   FaShare,
   FaMapMarkerAlt,
