@@ -6,6 +6,7 @@ import { db } from "../firebase";
 import { FcHome } from "react-icons/fc";
 import { useEffect } from "react";
 import { getAuth, updateProfile } from "firebase/auth";
+import ListingItem from"../components/ListingItem";
 import {
   collection,
   deleteDoc,
@@ -20,6 +21,8 @@ import {
 export default function Profile() {
   const auth = getAuth();
   const navigate = useNavigate();
+  const [listings, setListings] = useState(null);
+  const [loading, setLoading] = useState(true);
   const [changeDetail, setChangeDetail] = useState(false);
   const [formData, setFormData] = useState({
     name: auth.currentUser.displayName,
@@ -55,6 +58,59 @@ export default function Profile() {
     } catch (error) {
       toast.error("Could not update the profile details");
     }
+  }
+  useEffect(() => {
+    async function fetchUserListings() {
+      // Référence à la collection "listings" dans Firestore
+      const listingRef = collection(db, "listings");
+  
+      // Construction de la requête Firestore pour récupérer les listings de l'utilisateur courant
+      const q = query(
+        listingRef,
+        // Filtrage des documents où le champ "userRef" est égal à l'UID de l'utilisateur courant
+        where("userRef", "==", auth.currentUser.uid),
+        // Tri des résultats par ordre décroissant sur le champ "timestamp"
+        orderBy("timestamp", "desc")
+      );
+  
+      // Exécution de la requête Firestore
+      const querySnap = await getDocs(q);
+  
+      // Initialisation d'un tableau pour stocker les listings récupérés
+      let listings = [];
+  
+      // Itération à travers chaque document dans le snapshot de la requête
+      querySnap.forEach((doc) => {
+        // Ajout de chaque document avec son ID et ses données dans le tableau "listings"
+        listings.push({
+          id: doc.id,
+          data: doc.data(),
+        });
+      });
+  
+      // Mise à jour de l'état local avec les listings récupérés depuis Firestore
+      setListings(listings);
+  
+      // Indication que le chargement est terminé en mettant à jour l'état "loading" à false
+      setLoading(false);
+    }
+  
+    // Appel de la fonction fetchUserListings au montage du composant ou lorsque auth.currentUser.uid change
+    fetchUserListings();
+  }, [auth.currentUser.uid]); // Dépendance de useEffect pour exécuter la fonction lorsque l'UID de l'utilisateur change
+  
+  async function onDelete(listingID) {
+    if (window.confirm("Are you sure you want to delete?")) {
+      await deleteDoc(doc(db, "listings", listingID));
+      const updatedListings = listings.filter(
+        (listing) => listing.id !== listingID
+      );
+      setListings(updatedListings);
+      toast.success("Successfully deleted the listing");
+    }
+  }
+  function onEdit(listingID) {
+    navigate(`/edit-listing/${listingID}`);
   }
   return (
     <>
@@ -106,8 +162,35 @@ export default function Profile() {
             </p>
           </div>
         </form>
+        <button className="bg-blue-500 hover:bg-blue-400 text-white font-bold py-2 px-4 border-b-4 border-blue-700 hover:border-blue-500 rounded w-full
+        px-7 py-3 uppercase text-md font-medium">
+        <Link to="/createListing" className='flex justify-center justify-items'>
+        <FcHome className="mr-2 text-3xl bg-red-200 rounded-full p-1 border-2"/>
+        Sell or rent a house
+        </Link>
+      </button>
       </div>
     </section>
+    <div className="max-w-6xl px-3 mt-6 mx-auto">
+        {!loading && listings.length > 0 && (
+          <>
+            <h2 className="text-2xl text-center font-semibold mb-6">
+              My Listings
+            </h2>
+            <ul className="sm:grid grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5">
+              {listings.map((listing) => (
+                <ListingItem
+                  key={listing.id}
+                  id={listing.id}
+                  listing={listing.data}
+                  onDelete={() => onDelete(listing.id)}
+                  onEdit={() => onEdit(listing.id)}
+                />
+              ))}
+            </ul>
+          </>
+        )}
+      </div>
     </>
   );
 }
