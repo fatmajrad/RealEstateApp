@@ -18,40 +18,40 @@ import Listing from './pages/Listing';
 function App() {
   return (
     <Router>
-      <Header />
-      <Routes>
-        <Route path="/" element={<Home />} />
-        <Route path="/profile" element={<PrivateRoute />}>
-          <Route path="/profile" element={<Profile />} />
-        </Route>
-        <Route path="/forgotPassword" element={<ForgotPassword />} />
-        <Route path="/offers" element={<Offers />} />
-        <Route path="/signIn" element={<SignIn />} />
-        <Route path="/signUp" element={<SignUp />} />
-        <Route
-            path="/category/:categoryName/:listingId"
-            element={<Listing />}
-          />
-        <Route path="/createListing" element={<PrivateRoute />}>
-          <Route path="/createListing" element={<CreateListing />} /> {/* Nested route */}
-        </Route>
-        <Route path="/editListing" element={<PrivateRoute />}>
-          <Route path="/editListing/:listingId" element={<EditListing />} /> {/* Nested route */}
-        </Route>
-      </Routes>
-      <ToastContainer
-        position="bottom-center"
-        autoClose={5000}
-        hideProgressBar={false}
-        newestOnTop={false}
-        closeOnClick
-        rtl={false}
-        pauseOnFocusLoss
-        draggable
-        pauseOnHover
-        theme="dark"
-      />
-    </Router>
+    <Header />
+    <Routes>
+      <Route path="/" element={<Home />} />
+      <Route path="/profile" element={<PrivateRoute />}>
+        <Route path="/profile" element={<Profile />} />
+      </Route>
+      <Route path="/forgotPassword" element={<ForgotPassword />} />
+      <Route path="/offers" element={<Offers />} />
+      <Route path="/signIn" element={<SignIn />} />
+      <Route path="/signUp" element={<SignUp />} />
+      <Route
+          path="/category/:categoryName/:listingId"
+          element={<Listing />}
+        />
+      <Route path="/createListing" element={<PrivateRoute />}>
+        <Route path="/createListing" element={<CreateListing />} /> {/* Nested route */}
+      </Route>
+      <Route path="/editListing" element={<PrivateRoute />}>
+        <Route path="/editListing/:listingId" element={<EditListing />} /> {/* Nested route */}
+      </Route>
+    </Routes>
+    <ToastContainer
+      position="bottom-center"
+      autoClose={5000}
+      hideProgressBar={false}
+      newestOnTop={false}
+      closeOnClick
+      rtl={false}
+      pauseOnFocusLoss
+      draggable
+      pauseOnHover
+      theme="dark"
+    />
+  </Router>
   );
 }
 

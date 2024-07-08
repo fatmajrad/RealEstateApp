@@ -1,6 +1,5 @@
 import { doc, getDoc } from "firebase/firestore";
-import { useState } from "react";
-import { useEffect } from "react";
+import { useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
 import Spinner from "../components/Spinner";
 import { db } from "../firebase";
@@ -11,7 +10,7 @@ import SwiperCore, {
   Navigation,
   Pagination,
 } from "swiper";
-//import "swiper/css/bundle";
+import "swiper/swiper-bundle.min.css";
 import {
   FaShare,
   FaMapMarkerAlt,
@@ -24,6 +23,8 @@ import { getAuth } from "firebase/auth";
 import Contact from "../components/Contact";
 import { MapContainer, Marker, Popup, TileLayer } from "react-leaflet";
 
+SwiperCore.use([Autoplay, Navigation, Pagination, EffectFade]);
+
 export default function Listing() {
   const auth = getAuth();
   const params = useParams();
@@ -31,21 +32,30 @@ export default function Listing() {
   const [loading, setLoading] = useState(true);
   const [shareLinkCopied, setShareLinkCopied] = useState(false);
   const [contactLandlord, setContactLandlord] = useState(false);
-  SwiperCore.use([Autoplay, Navigation, Pagination]);
+
   useEffect(() => {
     async function fetchListing() {
-      const docRef = doc(db, "listings", params.listingId);
-      const docSnap = await getDoc(docRef);
-      if (docSnap.exists()) {
-        setListing(docSnap.data());
+      try {
+        const docRef = doc(db, "listings", params.listingId);
+        const docSnap = await getDoc(docRef);
+        if (docSnap.exists()) {
+          setListing(docSnap.data());
+        } else {
+          console.log("No such document!");
+        }
+      } catch (error) {
+        console.error("Error fetching document: ", error);
+      } finally {
         setLoading(false);
       }
     }
     fetchListing();
   }, [params.listingId]);
+
   if (loading) {
     return <Spinner />;
   }
+
   return (
     <main>
       <Swiper
@@ -53,51 +63,26 @@ export default function Listing() {
         navigation
         pagination={{ type: "progressbar" }}
         effect="fade"
-        modules={[EffectFade]}
         autoplay={{ delay: 3000 }}
+        modules={[EffectFade, Autoplay, Navigation, Pagination]}
       >
         {listing.imgUrls.map((url, index) => (
           <SwiperSlide key={index}>
             <div
-              className="relative w-full overflow-hidden h-[300px]"
+              className="relative w-full overflow-hidden h-[300px] md:h-[400px]"
               style={{
-                background: `url(${listing.imgUrls[index]}) center no-repeat`,
+                background: `url(${url}) center no-repeat`,
                 backgroundSize: "cover",
               }}
             ></div>
           </SwiperSlide>
         ))}
       </Swiper>
-      <div
-        className="fixed top-[13%] right-[3%] z-10 bg-white cursor-pointer border-2 border-gray-400 rounded-full w-12 h-12 flex justify-center items-center"
-        onClick={() => {
-          navigator.clipboard.writeText(window.location.href);
-          setShareLinkCopied(true);
-          setTimeout(() => {
-            setShareLinkCopied(false);
-          }, 2000);
-        }}
-      >
-        <FaShare className="text-lg text-slate-500" />
-      </div>
-      {shareLinkCopied && (
-        <p className="fixed top-[23%] right-[5%] font-semibold border-2 border-gray-400 rounded-md bg-white z-10 p-2">
-          Link Copied
-        </p>
-      )}
 
       <div className="m-4 flex flex-col md:flex-row max-w-6xl lg:mx-auto p-4 rounded-lg shadow-lg bg-white lg:space-x-5">
-        <div className=" w-full ">
+        <div className="w-full">
           <p className="text-2xl font-bold mb-3 text-blue-900">
             {listing.name} - ${" "}
-            {listing.offer
-              ? listing.discountedPrice
-                  .toString()
-                  .replace(/\B(?=(\d{3})+(?!\d))/g, ",")
-              : listing.regularPrice
-                  .toString()
-                  .replace(/\B(?=(\d{3})+(?!\d))/g, ",")}
-            {listing.type === "rent" ? " / month" : ""}
           </p>
           <p className="flex items-center mt-6 mb-3 font-semibold">
             <FaMapMarkerAlt className="text-green-700 mr-1" />
@@ -135,6 +120,26 @@ export default function Listing() {
               {listing.furnished ? "Furnished" : "Not furnished"}
             </li>
           </ul>
+
+          <div className="flex items-center space-x-2">
+            <button
+              onClick={() => {
+                navigator.clipboard.writeText(window.location.href);
+                setShareLinkCopied(true);
+                setTimeout(() => {
+                  setShareLinkCopied(false);
+                }, 2000);
+              }}
+              className="px-3 py-1 bg-gray-200 text-gray-800 font-medium text-sm uppercase rounded shadow-md hover:bg-gray-300 hover:shadow-lg focus:bg-gray-300 focus:shadow-lg transition duration-150 ease-in-out"
+            >
+              <FaShare className="inline-block mr-2" />
+              Share
+            </button>
+            {shareLinkCopied && (
+              <p className="text-green-500 font-semibold">Link Copied!</p>
+            )}
+          </div>
+
           {listing.userRef !== auth.currentUser?.uid && !contactLandlord && (
             <div className="mt-6">
               <button
@@ -149,8 +154,13 @@ export default function Listing() {
             <Contact userRef={listing.userRef} listing={listing} />
           )}
         </div>
-        <div className="w-full h-[200px] md:h-[400px] z-10 overflow-x-hidden mt-6 md:mt-0 md:ml-2">
-        </div>
+        <div
+          className="w-full h-[200px] md:h-[400px] z-10 overflow-x-hidden mt-6 md:mt-0 md:ml-2"
+          style={{
+            background: `url(${listing.imgUrls[0]}) center no-repeat`,
+            backgroundSize: "cover",
+          }}
+        ></div>
       </div>
     </main>
   );
