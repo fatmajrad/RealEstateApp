@@ -6,6 +6,7 @@ import Home from './pages/Home';
 import ForgotPassword from './pages/ForgotPassword';
 import Offers from './pages/Offers';
 import Profile from './pages/Profile';
+import AppointementManagment from './pages/AppointementManagment';
 import SignIn from './pages/SignIn';
 import SignUp from './pages/SignUp';
 import Header from './components/Header';
@@ -14,6 +15,7 @@ import CreateListing from './pages/CreateListing';
 import EditListing from './pages/EditListing';
 import './App.css';
 import Listing from './pages/Listing';
+import OffersManagment from './pages/OffersManagment';
 
 function App() {
   return (
@@ -34,6 +36,12 @@ function App() {
         />
       <Route path="/createListing" element={<PrivateRoute />}>
         <Route path="/createListing" element={<CreateListing />} /> {/* Nested route */}
+      </Route>
+      <Route path="/appointementManagment" element={<PrivateRoute />}>
+        <Route path="/appointementManagment" element={<AppointementManagment />} /> {/* Nested route */}
+      </Route>
+      <Route path="/offersManagment" element={<PrivateRoute />}>
+        <Route path="/offersManagment" element={<OffersManagment />} /> {/* Nested route */}
       </Route>
       <Route path="/editListing" element={<PrivateRoute />}>
         <Route path="/editListing/:listingId" element={<EditListing />} /> {/* Nested route */}

@@ -1,5 +1,3 @@
-import React,{ useEffect,useState } from "react";
- 
 import {
   collection,
   getDoc,
@@ -9,7 +7,8 @@ import {
   query,
   where,
 } from "firebase/firestore";
-
+import { useEffect } from "react";
+import { useState } from "react";
 import { Link } from "react-router-dom";
 import ListingItem from "../components/ListingItem";
 import Slider from "../components/Slider";
@@ -48,6 +47,8 @@ export default function Home() {
   }, []);
   // Places for rent
   const [rentListings, setRentListings] = useState(null);
+
+  
   useEffect(() => {
     async function fetchListings() {
       try {
@@ -78,6 +79,8 @@ export default function Home() {
   }, []);
   // Places for rent
   const [saleListings, setSaleListings] = useState(null);
+
+
   useEffect(() => {
     async function fetchListings() {
       try {
@@ -86,7 +89,6 @@ export default function Home() {
         // create the query
         const q = query(
           listingsRef,
-          where("type", "==", "sale"),
           orderBy("timestamp", "desc"),
           limit(4)
         );
@@ -99,6 +101,7 @@ export default function Home() {
             data: doc.data(),
           });
         });
+        console.log(listings);
         setSaleListings(listings);
       } catch (error) {
         console.log(error);
@@ -108,6 +111,7 @@ export default function Home() {
   }, []);
   return (
     <div>
+    
       <Slider />
       <div className="max-w-6xl mx-auto pt-4 space-y-6">
         {offerListings && offerListings.length > 0 && (

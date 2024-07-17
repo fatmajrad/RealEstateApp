@@ -4,13 +4,15 @@ import { collection, getDocs, limit, orderBy, query } from "firebase/firestore";
  
 import Spinner from "../components/Spinner";
 import { db } from "../firebase";
-import { Swiper, SwiperSlide } from "swiper/react";
-
+// import { Swiper, SwiperSlide } from 'swiper/react';
+// import 'swiper/swiper-bundle.css';
+// import 'swiper/modules/autoplay/autoplay.css';
+// import 'swiper/modules/navigation/navigation';
 
 
 // Import Swiper styles
 
-import 'swiper/swiper.min.css';
+// import 'swiper/css';
  
 //import "swiper/swiper-bundle.min.css";
 import { useNavigate } from "react-router-dom";
@@ -45,10 +47,21 @@ export default function Slider() {
     return <></>;
   }
   return (
-    listings && (
-      <>
-       
-      </>
-    )
+    <h1>Hello</h1>
+    // listings && (
+    //   <></>
+    // //   <Swiper
+    // //   spaceBetween={50}
+    // //   slidesPerView={3}
+    // //   onSlideChange={() => console.log('slide change')}
+    // //   onSwiper={(swiper) => console.log(swiper)}
+    // // >
+    // //   <SwiperSlide>Slide 1</SwiperSlide>
+    // //   <SwiperSlide>Slide 2</SwiperSlide>
+    // //   <SwiperSlide>Slide 3</SwiperSlide>
+    // //   <SwiperSlide>Slide 4</SwiperSlide>
+    // //   ...
+    // // </Swiper>
+    // )
   );
 }
