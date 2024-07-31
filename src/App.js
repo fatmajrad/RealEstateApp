@@ -16,6 +16,7 @@ import EditListing from './pages/EditListing';
 import './App.css';
 import Listing from './pages/Listing';
 import OffersManagment from './pages/OffersManagment';
+import OfferDetails from './pages/OfferDetails';
 
 function App() {
   return (
@@ -45,6 +46,9 @@ function App() {
       </Route>
       <Route path="/editListing" element={<PrivateRoute />}>
         <Route path="/editListing/:listingId" element={<EditListing />} /> {/* Nested route */}
+      </Route>
+      <Route path="/offerDetails" element={<PrivateRoute />}>
+        <Route path="/offerDetails/:listingId" element={<OfferDetails />} /> {/* Nested route */}
       </Route>
     </Routes>
     <ToastContainer

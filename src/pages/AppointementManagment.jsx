@@ -1,22 +1,68 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import Sidebbar from "../components/Sidebbar";
+import { getAuth } from "firebase/auth";
+import { useNavigate, Link } from "react-router-dom";
+import { toast } from "react-toastify";
+import {
+  collection,
+  query,
+  where,
+  orderBy,
+  getDocs,
+  deleteDoc,
+  doc,
+} from "firebase/firestore";
+import { db } from "../firebase"; // Import your Firestore configuration
+export default function AppointementManagment(){
 
-const AppointmentList = () => {
+
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedAppointment, setSelectedAppointment] = useState(null);
+  const auth = getAuth();
+  const navigate = useNavigate();
+  const [appointments, setAppointments] = useState([]);
+  const [loading, setLoading] = useState(true);
 
-  const appointments = [
-    {
-      id: 1,
-      disponibility: '2024-08-01',
-      name: 'John Doe',
-      phoneNumber: '123-456-7890',
-      email: 'john.doe@example.com',
-      status: 'Pending'
-    },
-    // Add more appointments here
-  ];
+  useEffect(() => {
+    async function fetchUserAppointements() {
+      try {
+        // Reference to the "listings" collection in Firestore
+        const appointmentRef = collection(db, "appointments");
+        const q = query(
+          appointmentRef,
+         // where("listingRef.userRef", "==", auth.currentUser.uid),  // Ensure correct path to userRef
+         // where("listingRef.status", "in", ["onHold", "available"]),          // Filter by status
+          orderBy("timestamp", "desc")                             // Order by timestamp in descending order
+        );
 
+        const querySnap = await getDocs(q);
+        querySnap.forEach((doc) => {
+          appointments.push({
+            id: doc.id,
+            data: doc.data(),
+          });
+        });
+        console.log(appointments);
+        setAppointments(appointments);
+        setLoading(false);
+      } catch (error) {
+        console.error("Error fetching appointments: ", error);
+        toast.error("Failed to fetch appointments");
+      }
+    }
+    fetchUserAppointements();
+  }, [auth.currentUser.uid]);
+
+  async function onDelete(appointementID) {
+    if (window.confirm("Are you sure you want to delete?")) {
+      await deleteDoc(doc(db, "appointments", appointementID));
+      const updatedAppointment = appointments.filter(
+        (appointments) => appointments.id !== appointementID
+      );
+      setAppointments(updatedAppointment);
+      toast.success("Successfully deleted the listing");
+    }
+  }
   const openModal = (appointment) => {
     setSelectedAppointment(appointment);
     setIsModalOpen(true);
@@ -133,4 +179,4 @@ const AppointmentList = () => {
   );
 };
 
-export default AppointmentList;
+

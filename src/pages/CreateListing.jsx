@@ -8,6 +8,7 @@ import {
   getDownloadURL,
   
 } from "firebase/storage";
+
 import { getAuth } from "firebase/auth";
 import { v4 as uuidv4 } from "uuid";
 import { addDoc, collection, serverTimestamp } from "firebase/firestore";
@@ -146,7 +147,7 @@ export default function CreateListing() {
     const formDataCopy = {
       ...formData,
       imgUrls,
-      status : true,
+      status : "available",
       timestamp: serverTimestamp(),
       userRef: auth.currentUser.uid,
     };
@@ -155,7 +156,7 @@ export default function CreateListing() {
     const docRef = await addDoc(collection(db, "listings"), formDataCopy);
     setLoading(false);
     toast.success("Listing created");
-    navigate(`/category/${formDataCopy.type}/${docRef.id}`);
+    navigate(`/offersManagment`);
   }
   if (loading) {
     return <Spinner />;
@@ -165,7 +166,6 @@ export default function CreateListing() {
     <div className="flex">
     <Sidebbar />
     <div className="h-screen flex-1 p-7">
-     <h1>Hello</h1>
       <h1 className="text-3xl text-center mt-6 font-bold">Create a Listing</h1>
       <form onSubmit={onSubmit}>
         <p className="text-lg mt-6 font-semibold">Sell / Rent</p>

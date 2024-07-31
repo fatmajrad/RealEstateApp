@@ -357,7 +357,7 @@ import Contact from "../components/Contact";
       </form>
     </div>
   </div>
-      )}
+    )}
     </main>
   );
 }
