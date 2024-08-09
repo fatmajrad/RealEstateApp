@@ -1,28 +1,22 @@
-import React,{ useState,useEffect } from "react";
 import { collection, getDocs, limit, orderBy, query } from "firebase/firestore";
-
- 
+import { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import Spinner from "../components/Spinner";
 import { db } from "../firebase";
-// import { Swiper, SwiperSlide } from 'swiper/react';
-// import 'swiper/swiper-bundle.css';
-// import 'swiper/modules/autoplay/autoplay.css';
-// import 'swiper/modules/navigation/navigation';
 
-
-// Import Swiper styles
-
-// import 'swiper/css';
- 
-//import "swiper/swiper-bundle.min.css";
-import { useNavigate } from "react-router-dom";
+import { Navigation, Pagination, Scrollbar, A11y } from 'swiper/modules';
+import { Swiper, SwiperSlide } from 'swiper/react';
+import 'swiper/css';
+import 'swiper/css/navigation';
+import 'swiper/css/pagination';
+import 'swiper/css/scrollbar';
 
 
 export default function Slider() {
   const [listings, setListings] = useState(null);
   const [loading, setLoading] = useState(true);
- 
   const navigate = useNavigate();
+
   useEffect(() => {
     async function fetchListings() {
       const listingsRef = collection(db, "listings");
@@ -30,7 +24,7 @@ export default function Slider() {
       const querySnap = await getDocs(q);
       let listings = [];
       querySnap.forEach((doc) => {
-        return listings.push({
+        listings.push({
           id: doc.id,
           data: doc.data(),
         });
@@ -40,28 +34,46 @@ export default function Slider() {
     }
     fetchListings();
   }, []);
+
   if (loading) {
     return <Spinner />;
   }
-  if (listings.length === 0) {
-    return <></>;
+
+  if (!listings || listings.length === 0) {
+    return null; // Return null if there are no listings
   }
+
   return (
-    <h1>Hello</h1>
-    // listings && (
-    //   <></>
-    // //   <Swiper
-    // //   spaceBetween={50}
-    // //   slidesPerView={3}
-    // //   onSlideChange={() => console.log('slide change')}
-    // //   onSwiper={(swiper) => console.log(swiper)}
-    // // >
-    // //   <SwiperSlide>Slide 1</SwiperSlide>
-    // //   <SwiperSlide>Slide 2</SwiperSlide>
-    // //   <SwiperSlide>Slide 3</SwiperSlide>
-    // //   <SwiperSlide>Slide 4</SwiperSlide>
-    // //   ...
-    // // </Swiper>
-    // )
+    <>
+      <Swiper
+        slidesPerView={1}
+        navigation
+        pagination={{ type: "progressbar" }}
+        effect="fade"
+        autoplay={{ delay: 3000 }}
+      >
+        {listings.map(({ data, id }) => (
+          <SwiperSlide
+            key={id}
+            onClick={() => navigate(`/category/${data.type}/${id}`)}
+          >
+            <div className="relative w-full h-[300px] overflow-hidden">
+              <img
+                src={data.imgUrls[0]}
+                alt={data.name}
+                className="w-full h-full object-cover"
+              />
+            </div>
+            <p className="text-[#f1faee] absolute left-1 top-3 font-medium max-w-[90%] bg-[#457b9d] shadow-lg opacity-90 p-2 rounded-br-3xl">
+              {data.name}
+            </p>
+            <p className="text-[#f1faee] absolute left-1 bottom-1 font-semibold max-w-[90%] bg-[#e63946] shadow-lg opacity-90 p-2 rounded-tr-3xl">
+              ${data.discountedPrice ?? data.regularPrice}
+              {data.type === "rent" && " / month"}
+            </p>
+          </SwiperSlide>
+        ))}
+      </Swiper>
+    </>
   );
 }
