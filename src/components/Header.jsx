@@ -43,11 +43,30 @@ export default function Header() {
             </li>
             <li
               className={`cursor-pointer py-3 text-sm font-semibold text-gray-400 border-b-[3px] border-b-transparent ${
-                pathMatchRoute("/offersManagment") && "text-black border-b-blue-500"
+                pathMatchRoute("/offersManagment") &&
+                "text-black border-b-blue-500"
               }`}
               onClick={() => navigate("/offersManagment")}
             >
               Dashboard
+            </li>
+            <li
+              className={`cursor-pointer py-3 text-sm font-semibold text-gray-400 border-b-[3px] border-b-transparent ${
+                pathMatchRoute("/offersManagment") &&
+                "text-black border-b-blue-500"
+              }`}
+              onClick={() => navigate("/aboutUs")}
+            >
+              About us
+            </li>
+            <li
+              className={`cursor-pointer py-3 text-sm font-semibold text-gray-400 border-b-[3px] border-b-transparent ${
+                pathMatchRoute("/offersManagment") &&
+                "text-black border-b-blue-500"
+              }`}
+              onClick={() => navigate("/contactUs")}
+            >
+              Contact us
             </li>
             {/* <li
               className={`cursor-pointer py-3 text-sm font-semibold text-gray-400 border-b-[3px] border-b-transparent ${

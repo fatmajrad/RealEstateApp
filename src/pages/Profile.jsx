@@ -6,7 +6,6 @@ import { db } from "../firebase";
 import { FcHome } from "react-icons/fc";
 import { useEffect } from "react";
 import { getAuth, updateProfile } from "firebase/auth";
-import ListingItem from"../components/ListingItem";
 import {
   collection,
   deleteDoc,
@@ -17,6 +16,7 @@ import {
   updateDoc,
   where,
 } from "firebase/firestore";
+import { Box } from '@mui/material';
 
 export default function Profile() {
   const auth = getAuth();
@@ -113,7 +113,7 @@ export default function Profile() {
     navigate(`/editListing/${listingID}`);
   }
   return (
-    <>
+    <Box sx={{ backgroundColor: "#f5f5f5", height: "85vh" }}>
     <section className="max-w-6xl mx-auto flex justify-center items-center flex-col">
       <h1 className="text-3xl text-center mt-6 font-bold">My Profile</h1>
       <div className="w-full md:w-[50%] mt-6 px-3">
@@ -171,6 +171,6 @@ export default function Profile() {
       </button>
       </div>
     </section>
-    </>
+    </Box>
   );
 }
