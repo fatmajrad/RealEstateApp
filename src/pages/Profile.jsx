@@ -8,7 +8,6 @@ import { useEffect } from "react";
 import { getAuth, updateProfile } from "firebase/auth";
 import {
   collection,
-  deleteDoc,
   doc,
   getDocs,
   orderBy,
@@ -21,8 +20,8 @@ import { Box } from '@mui/material';
 export default function Profile() {
   const auth = getAuth();
   const navigate = useNavigate();
-  const [listings, setListings] = useState(null);
-  const [loading, setLoading] = useState(true);
+  // const [listings, setListings] = useState(null);
+  // const [loading, setLoading] = useState(true);
   const [changeDetail, setChangeDetail] = useState(false);
   const [formData, setFormData] = useState({
     name: auth.currentUser.displayName,
@@ -87,31 +86,27 @@ export default function Profile() {
           data: doc.data(),
         });
       });
-  
-      // Mise à jour de l'état local avec les listings récupérés depuis Firestore
-      setListings(listings);
-  
-      // Indication que le chargement est terminé en mettant à jour l'état "loading" à false
-      setLoading(false);
+      // setListings(listings);
+      // setLoading(false);
     }
   
     // Appel de la fonction fetchUserListings au montage du composant ou lorsque auth.currentUser.uid change
     fetchUserListings();
   }, [auth.currentUser.uid]); // Dépendance de useEffect pour exécuter la fonction lorsque l'UID de l'utilisateur change
   
-  async function onDelete(listingID) {
-    if (window.confirm("Are you sure you want to delete?")) {
-      await deleteDoc(doc(db, "listings", listingID));
-      const updatedListings = listings.filter(
-        (listing) => listing.id !== listingID
-      );
-      setListings(updatedListings);
-      toast.success("Successfully deleted the listing");
-    }
-  }
-  function onEdit(listingID) {
-    navigate(`/editListing/${listingID}`);
-  }
+  // async function onDelete(listingID) {
+  //   if (window.confirm("Are you sure you want to delete?")) {
+  //     await deleteDoc(doc(db, "listings", listingID));
+  //     const updatedListings = listings.filter(
+  //       (listing) => listing.id !== listingID
+  //     );
+  //     setListings(updatedListings);
+  //     toast.success("Successfully deleted the listing");
+  //   }
+  // }
+  // function onEdit(listingID) {
+  //   navigate(`/editListing/${listingID}`);
+  // }
   return (
     <Box sx={{ backgroundColor: "#f5f5f5", height: "85vh" }}>
     <section className="max-w-6xl mx-auto flex justify-center items-center flex-col">

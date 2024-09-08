@@ -1,5 +1,4 @@
 import { useState } from "react";
-import dashboard from "../assets/dashboard.png"
 import { useNavigate } from "react-router";
 export default function Sidebar() {
   const navigate = useNavigate();
@@ -15,15 +14,18 @@ export default function Sidebar() {
      // { title: "Setting", src: require("../assets/img/Setting.png") },
    ];
   return (
-    <div className="flex sticky">   
+    <div className="flex sticky">
       <div
-        className={` ${open ? "w-72" : "w-20 "} bg-dark-purple h-screen p-5 pt-8 relative duration-300`}
+        className={` ${
+          open ? "w-72" : "w-20 "
+        } bg-dark-purple h-screen p-5 pt-8 relative duration-300`}
       >
         <img
           src={require("../assets/img/control.png")}
           className={`absolute cursor-pointer -right-3 top-9 w-7 border-dark-purple
            border-2 rounded-full ${!open && "rotate-180"}`}
           onClick={() => setOpen(!open)}
+          alt="control"
         />
         {/* <div className="flex gap-x-4 items-center">
           <img
@@ -46,7 +48,7 @@ export default function Sidebar() {
               ${Menu.gap ? "mt-9" : "mt-2"} ${index === 0 && "bg-light-white"}`}
               onClick={() => navigate(Menu.path)}
             >
-              <img src={Menu.src} />
+              <img src={Menu.src} alt="menu"/>
               <span className={`${!open && "hidden"} origin-left duration-200`}>
                 {Menu.title}
               </span>
@@ -54,8 +56,6 @@ export default function Sidebar() {
           ))}
         </ul>
       </div>
-   
- 
- </div>
+    </div>
   );
 }
