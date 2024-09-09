@@ -1,11 +1,11 @@
-import { doc, getDoc,query,where,getDocs } from "firebase/firestore";
+import { doc, getDoc } from "firebase/firestore";
 import { useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
 import Spinner from "../components/Spinner";
 import { db } from "../firebase";
 import { getAuth } from "firebase/auth";
 import { toast } from "react-toastify";
-import { addDoc, collection, serverTimestamp } from "firebase/firestore";
+// import { addDoc, collection, serverTimestamp } from "firebase/firestore";
 import { useNavigate } from "react-router-dom";
 import {
   FaShare,
@@ -25,13 +25,12 @@ import Contact from "../components/Contact";
     const [shareLinkCopied, setShareLinkCopied] = useState(false);
     const [contactLandlord, setContactLandlord] = useState(false);
     const [isModalOpen, setIsModalOpen] = useState(false);
-    const [formData, setFormData] = useState({
-      disponibility: null,
-      name: "",
-      phoneNumber: "",
-      email: "",
-    });
-    const { name, disponibility, phoneNumber, email } = formData;
+    // const [formData, setFormData] = useState({
+    //   disponibility: null,
+    //   name: "",
+    //   phoneNumber: "",
+    //   email: "",
+    // });
 
     useEffect(() => {
       async function fetchListing() {
@@ -65,114 +64,114 @@ import Contact from "../components/Contact";
     setIsModalOpen(!isModalOpen);
   };
   // Handle form input changes
-  const onChangeModel = (e) => {
-    setFormData({ ...formData, [e.target.id]: e.target.value });
-  };
-  const isValidDateTime = (dateTime) => {
-    const now = new Date();
-    const appointmentDate = new Date(dateTime);
-    const hours = appointmentDate.getHours();
-    const day = appointmentDate.getDay();
+  // const onChangeModel = (e) => {
+  //   setFormData({ ...formData, [e.target.id]: e.target.value });
+  // };
+  // const isValidDateTime = (dateTime) => {
+  //   const now = new Date();
+  //   const appointmentDate = new Date(dateTime);
+  //   const hours = appointmentDate.getHours();
+  //   const day = appointmentDate.getDay();
 
-    // Check if the date is in the future
-    if (appointmentDate <= now) return false;
+  //   // Check if the date is in the future
+  //   if (appointmentDate <= now) return false;
 
-    // Check if the time is between 08:00 and 17:30
-    if (hours < 8 || (hours === 17 && appointmentDate.getMinutes() > 30) || hours >= 18) return false;
+  //   // Check if the time is between 08:00 and 17:30
+  //   if (hours < 8 || (hours === 17 && appointmentDate.getMinutes() > 30) || hours >= 18) return false;
 
-    // Check if the day is not Sunday (0 - Sunday)
-    if (day === 0) return false;
+  //   if (day === 0) return false;
 
-    return true;
-  };
-  async function onSubmitModel(e) {
-    e.preventDefault();
-    setLoading(true);
-    try {
-      // Create a reference to the appointments collection
-      const appointmentsRef = collection(db, "appointments");
+  //   return true;
+  // };
 
-      // Create a query to check if the user has booked more than two appointments
-      const q1 = query(
-        appointmentsRef,
-        where("name", "==", formData.name),
-        where("email", "==", formData.email),
-        where("phoneNumber", "==", formData.phoneNumber)
-      );
+  // async function onSubmitModel(e) {
+  //   e.preventDefault();
+  //   setLoading(true);
+  //   try {
+  //     // Create a reference to the appointments collection
+  //     const appointmentsRef = collection(db, "appointments");
 
-      // Execute the query and get the number of appointments
-      const querySnap1 = await getDocs(q1);
-      const numberOfAppointments = querySnap1.size;
+  //     // Create a query to check if the user has booked more than two appointments
+  //     const q1 = query(
+  //       appointmentsRef,
+  //       where("name", "==", formData.name),
+  //       where("email", "==", formData.email),
+  //       where("phoneNumber", "==", formData.phoneNumber)
+  //     );
 
-      // Check if the user has booked more than two appointments
-      if (numberOfAppointments >= 2) {
-        toast.error("You have already booked more than two appointments.");
-        setLoading(false);
-        return;
-      }
+  //     // Execute the query and get the number of appointments
+  //     const querySnap1 = await getDocs(q1);
+  //     const numberOfAppointments = querySnap1.size;
 
-      // Check if there is another appointment at the same time on the same listing
-      const q2 = query(
-        appointmentsRef,
-        where("listingRef", "==", params.listingId),
-        where("disponibility", "==", formData.disponibility)
-      );
+  //     // Check if the user has booked more than two appointments
+  //     if (numberOfAppointments >= 2) {
+  //       toast.error("You have already booked more than two appointments.");
+  //       setLoading(false);
+  //       return;
+  //     }
 
-      // Execute the query and check if any document exists
-      const querySnap2 = await getDocs(q2);
-      if (!querySnap2.empty) {
-        toast.error("An appointment at this time already exists.");
-        setLoading(false);
-        return;
-      }
+  //     // Check if there is another appointment at the same time on the same listing
+  //     const q2 = query(
+  //       appointmentsRef,
+  //       where("listingRef", "==", params.listingId),
+  //       where("disponibility", "==", formData.disponibility)
+  //     );
 
-      // Check if there is at least a 1-hour gap between appointments on the same listing
-      const q3 = query(
-        appointmentsRef,
-        where("listingRef", "==", params.listingId),
-        where("disponibility", ">=", new Date(new Date(formData.disponibility).getTime() - 3600000)),
-        where("disponibility", "<=", new Date(new Date(formData.disponibility).getTime() + 3600000))
-      );
+  //     // Execute the query and check if any document exists
+  //     const querySnap2 = await getDocs(q2);
+  //     if (!querySnap2.empty) {
+  //       toast.error("An appointment at this time already exists.");
+  //       setLoading(false);
+  //       return;
+  //     }
 
-      // Execute the query and check if any document exists
-      const querySnap3 = await getDocs(q3);
-      if (!querySnap3.empty) {
-        toast.error("Appointments on the same listing must be at least 1 hour apart.");
-        setLoading(false);
-        return;
-      }
+  //     // Check if there is at least a 1-hour gap between appointments on the same listing
+  //     const q3 = query(
+  //       appointmentsRef,
+  //       where("listingRef", "==", params.listingId),
+  //       where("disponibility", ">=", new Date(new Date(formData.disponibility).getTime() - 3600000)),
+  //       where("disponibility", "<=", new Date(new Date(formData.disponibility).getTime() + 3600000))
+  //     );
 
-      // Check if disponibility is within the allowed time range and not on Sunday
-      const disponibilityDate = new Date(formData.disponibility);
-      const hour = disponibilityDate.getHours();
-      const day = disponibilityDate.getDay();
+  //     // Execute the query and check if any document exists
+  //     const querySnap3 = await getDocs(q3);
+  //     if (!querySnap3.empty) {
+  //       toast.error("Appointments on the same listing must be at least 1 hour apart.");
+  //       setLoading(false);
+  //       return;
+  //     }
 
-      if (hour < 8 || hour > 17 || (hour === 17 && disponibilityDate.getMinutes() > 30) || day === 0) {
-        toast.error("Appointment time must be between 08:00 and 17:30 and not on Sunday.");
-        setLoading(false);
-        return;
-      }
+  //     // Check if disponibility is within the allowed time range and not on Sunday
+  //     const disponibilityDate = new Date(formData.disponibility);
+  //     const hour = disponibilityDate.getHours();
+  //     const day = disponibilityDate.getDay();
 
-      // Proceed with creating the appointment
-      const formDataCopy = {
-        ...formData,
-        timestamp: serverTimestamp(),
-        listingRef: params.listingId,
-        status: "onHold",
-        remarks: ""
-      };
+  //     if (hour < 8 || hour > 17 || (hour === 17 && disponibilityDate.getMinutes() > 30) || day === 0) {
+  //       toast.error("Appointment time must be between 08:00 and 17:30 and not on Sunday.");
+  //       setLoading(false);
+  //       return;
+  //     }
 
-      const docRef = await addDoc(collection(db, "appointments"), formDataCopy);
-      setLoading(false);
-      toggleModal();
-      toast.success("Your appointment is saved");
-      navigate(`/category/${formDataCopy.type}/${docRef.id}`);
-    } catch (error) {
-      console.error("Error adding appointment:", error);
-      setLoading(false);
-      toast.error("Failed to save appointment. Please try again later.");
-    }
-  }
+  //     // Proceed with creating the appointment
+  //     const formDataCopy = {
+  //       ...formData,
+  //       timestamp: serverTimestamp(),
+  //       listingRef: params.listingId,
+  //       status: "onHold",
+  //       remarks: ""
+  //     };
+
+  //     const docRef = await addDoc(collection(db, "appointments"), formDataCopy);
+  //     setLoading(false);
+  //     toggleModal();
+  //     toast.success("Your appointment is saved");
+  //     navigate(`/category/${formDataCopy.type}/${docRef.id}`);
+  //   } catch (error) {
+  //     console.error("Error adding appointment:", error);
+  //     setLoading(false);
+  //     toast.error("Failed to save appointment. Please try again later.");
+  //   }
+  // }
 
   return (
 <main>

@@ -1,16 +1,11 @@
 import React, { useEffect, useState } from "react";
 import Sidebbar from "../components/Sidebbar";
-import { getAuth } from "firebase/auth";
-import { useNavigate, Link } from "react-router-dom";
 import { toast } from "react-toastify";
 import {
   collection,
   query,
-  where,
   orderBy,
   getDocs,
-  deleteDoc,
-  doc,
 } from "firebase/firestore";
 import { db } from "../firebase"; // Import your Firestore configuration
 export default function AppointementManagment(){
@@ -18,10 +13,8 @@ export default function AppointementManagment(){
 
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedAppointment, setSelectedAppointment] = useState(null);
-  const auth = getAuth();
-  const navigate = useNavigate();
   const [appointments, setAppointments] = useState([]);
-  const [loading, setLoading] = useState(true);
+  // const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     async function fetchUserAppointements() {
@@ -44,25 +37,25 @@ export default function AppointementManagment(){
         });
         console.log(appointments);
         setAppointments(appointments);
-        setLoading(false);
+        // setLoading(false);
       } catch (error) {
         console.error("Error fetching appointments: ", error);
         toast.error("Failed to fetch appointments");
       }
     }
     fetchUserAppointements();
-  }, [auth.currentUser.uid]);
+  }, [appointments]);
 
-  async function onDelete(appointementID) {
-    if (window.confirm("Are you sure you want to delete?")) {
-      await deleteDoc(doc(db, "appointments", appointementID));
-      const updatedAppointment = appointments.filter(
-        (appointments) => appointments.id !== appointementID
-      );
-      setAppointments(updatedAppointment);
-      toast.success("Successfully deleted the listing");
-    }
-  }
+  // async function onDelete(appointementID) {
+  //   if (window.confirm("Are you sure you want to delete?")) {
+  //     await deleteDoc(doc(db, "appointments", appointementID));
+  //     const updatedAppointment = appointments.filter(
+  //       (appointments) => appointments.id !== appointementID
+  //     );
+  //     setAppointments(updatedAppointment);
+  //     toast.success("Successfully deleted the listing");
+  //   }
+  // }
   const openModal = (appointment) => {
     setSelectedAppointment(appointment);
     setIsModalOpen(true);

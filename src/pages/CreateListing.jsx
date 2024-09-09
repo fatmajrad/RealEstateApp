@@ -11,8 +11,7 @@ import {
 
 import { getAuth } from "firebase/auth";
 import { v4 as uuidv4 } from "uuid";
-import { addDoc, collection, serverTimestamp } from "firebase/firestore";
-import { db } from "../firebase";
+import { serverTimestamp } from "firebase/firestore";
 import { useNavigate } from "react-router-dom";
 import Sidebbar from "../components/Sidebbar";
 // import Sidebar from "../components/Sidebar.jsx";
@@ -61,7 +60,6 @@ export default function CreateListing() {
     furnished,
     parking,
     surfaceArea,
-    localType,
     disponibility,
     offerType,
     price,
@@ -119,6 +117,8 @@ export default function CreateListing() {
               case "running":
                 console.log("Upload is running");
                 break;
+              default:
+                console.log("Upload is default");
             }
           },
           (error) => {
@@ -153,7 +153,7 @@ export default function CreateListing() {
     };
     delete formDataCopy.images;
     !formDataCopy.offer && delete formDataCopy.discountedPrice;
-    const docRef = await addDoc(collection(db, "listings"), formDataCopy);
+    // const docRef = await addDoc(collection(db, "listings"), formDataCopy);
     setLoading(false);
     toast.success("Listing created");
     navigate(`/offersManagment`);
