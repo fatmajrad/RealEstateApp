@@ -46,6 +46,15 @@ export default function Header() {
                 pathMatchRoute("/offersManagment") &&
                 "text-black border-b-blue-500"
               }`}
+              onClick={() => navigate("/offers")}
+            >
+              Offers
+            </li>
+            <li
+              className={`cursor-pointer py-3 text-sm font-semibold text-gray-400 border-b-[3px] border-b-transparent ${
+                pathMatchRoute("/offersManagment") &&
+                "text-black border-b-blue-500"
+              }`}
               onClick={() => navigate("/offersManagment")}
             >
               Dashboard

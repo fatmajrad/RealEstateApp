@@ -12,6 +12,7 @@ import {
   getDocs,
   deleteDoc,
   doc,
+  updateDoc,
 } from "firebase/firestore";
 import { db } from "../firebase"; // Import your Firestore configuration
 import Sidebbar from "../components/Sidebbar";
@@ -23,11 +24,12 @@ export default function OffersManagment() {
   const navigate = useNavigate();
   const [listings, setListings] = useState([]);
   const [loading, setLoading] = useState(true);
-  
+  const [currentPage, setCurrentPage] = useState(1);
+  const listingsPerPage = 5;
+
   useEffect(() => {
     async function fetchUserListings() {
       try {
-        // Reference to the "listings" collection in Firestore
         const listingRef = collection(db, "listings");
         const q = query(
           listingRef,
@@ -36,7 +38,7 @@ export default function OffersManagment() {
         );
 
         const querySnap = await getDocs(q);
-        const fetchedListings = querySnap.docs.map(doc => ({
+        const fetchedListings = querySnap.docs.map((doc) => ({
           id: doc.id,
           data: doc.data(),
         }));
@@ -66,6 +68,32 @@ export default function OffersManagment() {
     }
   }
 
+  // Update all related appointments when the offer status changes to "not available"
+  async function handleStatusChange(listingID, newStatus) {
+    try {
+      const listingDoc = doc(db, "listings", listingID);
+      await updateDoc(listingDoc, { status: newStatus });
+
+      if (newStatus === "not available") {
+        // Fetch all related appointments and set their status to "completed"
+        const appointmentRef = collection(db, "appointments");
+        const q = query(appointmentRef, where("listingID", "==", listingID));
+        const querySnap = await getDocs(q);
+        
+        const batchPromises = querySnap.docs.map(async (appointmentDoc) => {
+          const appointmentDocRef = doc(db, "appointments", appointmentDoc.id);
+          await updateDoc(appointmentDocRef, { status: "completed" });
+        });
+        await Promise.all(batchPromises);
+
+        toast.success("All related appointments have been set to 'completed'");
+      }
+    } catch (error) {
+      console.error("Error updating status: ", error);
+      toast.error("Failed to update offer status");
+    }
+  }
+
   function onEdit(listingID) {
     navigate(`/editListing/${listingID}`);
   }
@@ -73,6 +101,25 @@ export default function OffersManagment() {
   function onDetails(listingID) {
     navigate(`/offerDetails/${listingID}`);
   }
+
+  // Pagination logic
+  const indexOfLastListing = currentPage * listingsPerPage;
+  const indexOfFirstListing = indexOfLastListing - listingsPerPage;
+  const currentListings = listings.slice(indexOfFirstListing, indexOfLastListing);
+
+  const totalPages = Math.ceil(listings.length / listingsPerPage);
+
+  const nextPage = () => {
+    if (currentPage < totalPages) {
+      setCurrentPage(currentPage + 1);
+    }
+  };
+
+  const previousPage = () => {
+    if (currentPage > 1) {
+      setCurrentPage(currentPage - 1);
+    }
+  };
 
   return (
     <div className="flex">
@@ -124,7 +171,7 @@ export default function OffersManagment() {
                   </tr>
                 </thead>
                 <tbody>
-                  {listings.map((listing) => (
+                  {currentListings.map((listing) => (
                     <tr
                       key={listing.id}
                       className="odd:bg-white even:bg-gray-50 dark:bg-gray-900 dark:border-gray-700"
@@ -135,7 +182,16 @@ export default function OffersManagment() {
                       >
                         {listing.data.name}
                       </th>
-                      <td className="px-4 py-4">{listing.data.status}</td>
+                      <td className="px-4 py-4">
+                        <select
+                          value={listing.data.status}
+                          onChange={(e) => handleStatusChange(listing.id, e.target.value)}
+                          className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg p-2.5"
+                        >
+                          <option value="available">Available</option>
+                          <option value="not available">Not Available</option>
+                        </select>
+                      </td>
                       <td className="px-4 py-4">{listing.data.city}, {listing.data.state}</td>
                       <td className="px-4 py-4">{listing.data.localType}</td>
                       <td className="px-4 py-4">{listing.data.roomsNbr}</td>
@@ -159,6 +215,25 @@ export default function OffersManagment() {
                 </tbody>
               </table>
             )}
+          </div>
+
+          {/* Pagination Controls */}
+          <div className="flex justify-between items-center mt-4">
+            <button
+              onClick={previousPage}
+              disabled={currentPage === 1}
+              className={`px-4 py-2 bg-gray-300 rounded-md ${currentPage === 1 ? "opacity-50 cursor-not-allowed" : "hover:bg-gray-400"}`}
+            >
+              Previous
+            </button>
+            <span>Page {currentPage} of {totalPages}</span>
+            <button
+              onClick={nextPage}
+              disabled={currentPage === totalPages}
+              className={`px-4 py-2 bg-gray-300 rounded-md ${currentPage === totalPages ? "opacity-50 cursor-not-allowed" : "hover:bg-gray-400"}`}
+            >
+              Next
+            </button>
           </div>
         </div>
       </div>

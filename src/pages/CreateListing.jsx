@@ -14,6 +14,8 @@ import { v4 as uuidv4 } from "uuid";
 import { serverTimestamp } from "firebase/firestore";
 import { useNavigate } from "react-router-dom";
 import Sidebbar from "../components/Sidebbar";
+import { collection,addDoc } from "firebase/firestore";
+import { db } from "../firebase";
 // import Sidebar from "../components/Sidebar.jsx";
 
 const LocalType = {
@@ -147,13 +149,13 @@ export default function CreateListing() {
     const formDataCopy = {
       ...formData,
       imgUrls,
-      status : "available",
+      status : "Available",
       timestamp: serverTimestamp(),
       userRef: auth.currentUser.uid,
     };
     delete formDataCopy.images;
     !formDataCopy.offer && delete formDataCopy.discountedPrice;
-    // const docRef = await addDoc(collection(db, "listings"), formDataCopy);
+    const docRef = await addDoc(collection(db, "listings"), formDataCopy);
     setLoading(false);
     toast.success("Listing created");
     navigate(`/offersManagment`);
@@ -357,7 +359,7 @@ export default function CreateListing() {
             <p className="text-lg font-semibold">disponibility: </p>
             <div className="flex w-full justify-center items-center space-x-6">
               <input
-                type="datetime-local"
+                type="date"
                 id="disponibility"
                 value={disponibility}
                 onChange={onChange}
