@@ -33,8 +33,8 @@ const ContactUs = () => {
   const handleFormSubmit = (values, { resetForm }) => {
     setIsLoading(true);
     emailjs
-      .sendForm("service_h860sp9", "template_1w18q1t", form.current, {
-        publicKey: "qkDRc-J9QwNGAmCqk",
+      .sendForm("service_8t3apbr", "template_9ggiqsa", form.current, {
+      publicKey: "MWJI-jZuS3mU5egMn",
       })
       .then(() => {
         toast.success(

@@ -52,13 +52,17 @@ const handleStatusChange = async (id, newStatus) => {
     await updateDoc(appointmentDoc, { status: newStatus });
 
     // Immediately update the local state
-    setAppointments((prevAppointments) =>
-      prevAppointments.map((appointment) =>
-        appointment.id === id
-          ? { ...appointment, data: { ...appointment.data, status: newStatus } }
-          : appointment
-      )
-    );
+    setAppointments((prevAppointments) => {
+      return prevAppointments.map((appointment) => {
+        if (appointment.id === id) {
+          return {
+            ...appointment,
+            data: { ...appointment.data, status: newStatus } // Update the status here
+          };
+        }
+        return appointment;
+      });
+    });
 
     // Notify the user of the successful update
     toast.success("Status updated successfully!");
@@ -67,6 +71,7 @@ const handleStatusChange = async (id, newStatus) => {
     toast.error("Failed to update status");
   }
 };
+
   // Delete an appointment
   async function onDelete(appointmentID) {
     if (window.confirm("Are you sure you want to delete?")) {
