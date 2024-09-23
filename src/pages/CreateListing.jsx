@@ -149,7 +149,7 @@ export default function CreateListing() {
     const formDataCopy = {
       ...formData,
       imgUrls,
-      status : "Available",
+      status : "available",
       timestamp: serverTimestamp(),
       userRef: auth.currentUser.uid,
     };
