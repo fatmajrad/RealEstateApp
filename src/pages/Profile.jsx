@@ -1,9 +1,8 @@
 import React from 'react'
 import { useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import { db } from "../firebase";
-import { FcHome } from "react-icons/fc";
 import { useEffect } from "react";
 import { getAuth, updateProfile } from "firebase/auth";
 import {
@@ -157,13 +156,13 @@ export default function Profile() {
             </p>
           </div>
         </form>
-        <button className="bg-blue-500 hover:bg-blue-400 text-white font-bold py-2 px-4 border-b-4 border-blue-700 hover:border-blue-500 rounded w-full
+        {/* <button className="bg-blue-500 hover:bg-blue-400 text-white font-bold py-2 px-4 border-b-4 border-blue-700 hover:border-blue-500 rounded w-full
         px-7 py-3 uppercase text-md font-medium">
         <Link to="/createListing" className='flex justify-center justify-items'>
         <FcHome className="mr-2 text-3xl bg-red-200 rounded-full p-1 border-2"/>
         Sell or rent a house
         </Link>
-      </button>
+      </button> */}
       </div>
     </section>
     </Box>

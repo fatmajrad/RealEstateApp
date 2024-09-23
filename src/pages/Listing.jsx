@@ -3,13 +3,12 @@ import { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import Spinner from "../components/Spinner";
 import { db } from "../firebase";
-import { getAuth } from "firebase/auth";
 import { toast } from "react-toastify";
-import { FaMapMarkerAlt, FaBed, FaBath, FaParking, FaChair } from "react-icons/fa";
+import { FaMapMarkerAlt, FaBed, FaParking, FaChair } from "react-icons/fa";
 
 
 export default function Listing() {
-  const auth = getAuth();
+ 
   const params = useParams();
   const navigate = useNavigate();
   const [listing, setListing] = useState(null);
