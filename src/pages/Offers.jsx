@@ -2,7 +2,6 @@ import React, { useState, useEffect } from 'react';
 import { collection, query, where, orderBy, getDocs } from 'firebase/firestore';
 import ListingItem from "../components/ListingItem";
 import { db } from "../firebase";
-import { Link } from 'react-router-dom';
 import {
   Box,
   Button,
